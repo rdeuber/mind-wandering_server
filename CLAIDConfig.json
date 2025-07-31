@@ -1,0 +1,111 @@
+{
+  "milliseconds_deadline_to_load_modules": -1,
+  "hosts": [
+    {
+      "hostname": "galaxy_watch_host",
+      "type": "android",
+      "connect_to": {
+        "host": "Server",
+      },
+      "modules": [
+        {
+          "type": "GalaxyWatchCollector",
+          "id": "GalaxyWatchCollector",
+          "input_channels": {},
+          "output_channels": {
+            "AccelerationData" : "WatchAccelerationData",
+            "HeartRateData" : "WatchHeartRateData",
+            "GreenPPGData": "GreenPPGData"
+          },
+          "properties": {
+            "enableAccelerometer" : true,
+            "enableHeartRate" : true,
+            "enableGreenPPG": true
+          }
+        },
+        {
+          "type": "DataSaverModule",
+          "id": "AccelerationSaverModule",
+          "input_channels": {"DataChannel" :  "WatchAccelerationData"},
+          "output_channels": {},
+          "properties": {
+            "storagePath": "%media_dir/files",
+            "fileNameFormat": "%d.%m.%y/acceleration_data_%d.%m.%y_%H-%M.json",
+            "fileType": "batch_json"
+
+          }
+        },
+        {
+          "type": "DataSaverModule",
+          "id": "HeartRateSaverModule",
+          "input_channels": {"DataChannel" :  "WatchHeartRateData"},
+          "output_channels": {},
+          "properties": {
+            "storagePath": "%media_dir/files",
+            "fileNameFormat": "%d.%m.%y/heart_rate_data_%d.%m.%y_%H-%M.json",
+            "fileType": "batch_json"
+
+          }
+        },
+        {
+          "type": "DataSaverModule",
+          "id": "GreenPPGDataSaverModule",
+          "input_channels": {"DataChannel" :  "GreenPPGData"},
+          "output_channels": {},
+          "properties": {
+            "storagePath": "%media_dir/files",
+            "fileNameFormat": "%d.%m.%y/green_ppg_data_%d.%m.%y_%H-%M.json",
+            "fileType": "batch_json"
+
+          }
+        },
+        {
+          "type": "DataSyncModule",
+          "id": "DataSyncer",
+          "input_channels": {
+            "FromDataReceiverModuleChannel": "DataReceiverToDataSync"
+          },
+          "output_channels": {
+            "ToDataReceiverModuleChannel": "DataSyncToDataReceiver"
+          },
+          "properties": {
+            "filePath": "%media_dir/files",
+            "syncingSchedule": {
+              "periodic": [
+                {
+                  "period_minutes": 1
+                }
+              ]
+            },
+            "deleteFileAfterSync": "false",
+            "requiresConnectionToRemoteServer": "true",
+            "onlyWhenCharging": false
+          }
+        }
+      ]
+    },
+    {
+      "hostname": "Server",
+      "server_config": {
+        "host_server_address": "172.20.10.8:1337"
+      },
+      "modules": [
+        {
+          "type": "DataReceiverModule",
+          "id": "DataReceiver",
+          "input_channels": {
+            "FromDataSyncModuleChannel": "DataSyncToDataReceiver"
+          },
+          "output_channels": {
+            "ToDataSyncModuleChannel": "DataReceiverToDataSync"
+          },
+          "properties": {
+            "storagePath": "/Users/robin/Code/mind-wandering_server/data"
+          }
+        }
+      ]
+    }
+
+
+  ]
+}

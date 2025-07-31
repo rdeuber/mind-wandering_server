@@ -1,0 +1,8 @@
+# IDE files
+.idea/
+
+# macOS
+.DS_Store
+
+# Data folder contents
+data/*
