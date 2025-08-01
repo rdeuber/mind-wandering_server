@@ -1,11 +1,12 @@
 from claid import CLAID
 from claid.module.module_factory import ModuleFactory
+from my_modules.TimeSyncReaderModule import TimeSyncReaderModule
 
 module_factory = ModuleFactory()
 module_factory.register_default_modules()
 
-# Optional: Register custom modules.
-# module_factory.register_module(MyModule())
+# Register custom modules.
+module_factory.register_module(TimeSyncReaderModule)
 
 CLAID_instance = CLAID()
 CLAID_instance.start(

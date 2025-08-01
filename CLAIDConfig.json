@@ -5,7 +5,7 @@
       "hostname": "galaxy_watch_host",
       "type": "android",
       "connect_to": {
-        "host": "Server",
+        "host": "Server"
       },
       "modules": [
         {
@@ -21,6 +21,24 @@
             "enableAccelerometer" : true,
             "enableHeartRate" : true,
             "enableGreenPPG": true
+          }
+        },
+        {
+          "type": "ClockSyncModule",
+          "id": "ClockSyncModule",
+          "input_channels": {},
+          "output_channels": {
+            "ClockSyncData": "ClockSyncData"
+          },
+          "properties": {
+            "syncIntervalMinutes": 5,
+            "syncSchedule": {
+              "periodic": [
+                {
+                  "period_minutes": 1
+                }
+              ]
+            }
           }
         },
         {
@@ -106,14 +124,26 @@
         {
           "type": "DataSaverModule",
           "id": "AccelerationSaverModuleServer",
-          "input_channels": {"DataChannel" :  "WatchAccelerationData"},
+          "input_channels": {
+            "DataChannel": "WatchAccelerationData"
+          },
           "output_channels": {},
           "properties": {
             "storagePath": "/Users/robin/Code/mind-wandering_server/data_streamed",
             "fileNameFormat": "%d.%m.%y/acceleration_data_%d.%m.%y_%H-%M.json",
             "fileType": "batch_json"
-
+          }
+        },
+        {
+          "type": "TimeSyncReaderModule",
+          "id": "TimeSyncReader",
+          "input_channels": {
+            "ClockSyncData": "ClockSyncData"
           },
+          "output_channels": {},
+          "properties": {
+            "outputFilePath": "/Users/robin/Code/mind-wandering_server/time_sync_data.txt"
+          }
         }
       ]
     }
