@@ -42,37 +42,30 @@ class TimeSyncReaderModule(Module):
     def on_clock_sync(self, data):
         """Handle incoming ClockSyncData and print it."""
         try:
-            # Get current timestamp
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            # Get current local timestamp
+            local_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
             
-            # Extract the actual payload from ChannelData
-            if hasattr(data, 'payload') and data.payload:
-                # Try to get the actual ClockSyncData content
-                try:
-                    # For now, just show the raw payload info
-                    data_str = f"ClockSyncData payload (size: {len(data.payload) if data.payload else 0})"
-                    # You can add specific parsing here if you know the ClockSyncData format
-                except Exception as parse_error:
-                    data_str = f"Raw payload (size: {len(data.payload) if data.payload else 0})"
+            # Get original message timestamp if available
+            original_timestamp = "Unknown"
+            if hasattr(data, 'timestamp') and data.timestamp:
+                original_timestamp = data.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            
+            # Extract the actual data from ChannelData
+            if hasattr(data, 'data') and data.data:
+                clock_sync_data = data.data
             else:
-                data_str = "No payload data"
+                clock_sync_data = "No clock sync data found"
             
             # Print to console
-            self.module_info(f"Received ClockSyncData: {data_str}")
-            print(f"[TimeSyncReader] {timestamp} | ClockSyncData: {data_str}")
+            self.module_info(f"Received ClockSyncData: {clock_sync_data}")
+            print(f"[TimeSyncReader] Local: {local_timestamp} | Original: {original_timestamp} | ClockSyncData: {clock_sync_data}")
             
             # Save to text file
             with open(self.output_file_path, 'a') as f:
-                f.write(f"{timestamp} | {data_str}\n")
+                f.write(f"Local: {local_timestamp} | Original: {original_timestamp} | {clock_sync_data}\n")
             
         except Exception as e:
-            error_msg = f"Error processing ClockSyncData: {str(e)}"
-            self.module_warning(error_msg)
-            print(f"[TimeSyncReader] ERROR: {error_msg}")
-            
-            # Save error to file
-            with open(self.output_file_path, 'a') as f:
-                f.write(f"{timestamp} | ERROR: {error_msg}\n")
+            self.module_warning(f"Error processing ClockSyncData: {str(e)}")
     
     def annotateModule(self, annotator):
         """Annotate the module for CLAID Designer."""
