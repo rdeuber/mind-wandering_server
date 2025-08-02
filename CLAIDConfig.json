@@ -144,6 +144,17 @@
           "properties": {
             "outputFilePath": "/Users/robin/Code/mind-wandering_server/time_sync_data.txt"
           }
+        },
+        {
+          "type": "ServerClockSyncModule",
+          "id": "ServerClockSync",
+          "input_channels": {},
+          "output_channels": {
+            "ServerClockSyncData": "ServerClockSyncData"
+          },
+          "properties": {
+            "outputFilePath": "/Users/robin/Code/mind-wandering_server/server_clock_sync_data.txt"
+          }
         }
       ]
     }
