@@ -4,5 +4,15 @@
 # macOS
 .DS_Store
 
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 # Data folder contents
 data/*
+data_streamed/*
+
+# Logs
+*.txt
