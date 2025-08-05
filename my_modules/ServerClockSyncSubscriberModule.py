@@ -3,20 +3,20 @@ from claid.module.module_annotator import ModuleAnnotator
 import os
 from datetime import datetime
 
-class TimeSyncReaderModule(Module):
+class ServerClockSyncSubscriberModule(Module):
     """
-    A simple CLAID module that reads ClockSyncData and prints it.
+    A simple CLAID module that reads ClockSyncWatchToServer and prints it.
     Used for time syncing and data monitoring.
     """
     
     def __init__(self):
         super().__init__()
         self.clock_sync_channel = None
-        self.output_file_path = "/Users/robin/Code/mind-wandering_server/time_sync_data.txt"
+        self.output_file_path = "server_clock_sync_subscriber.txt"
         
     def initialize(self, properties):
         """Initialize the module with properties from the configuration."""
-        self.module_info("TimeSyncReaderModule initialized")
+        self.module_info("ServerClockSyncSubscriberModule initialized")
         
         # Get output file path from properties if specified
         if "outputFilePath" in properties:
@@ -24,23 +24,24 @@ class TimeSyncReaderModule(Module):
         
         # Create output directory if it doesn't exist
         output_dir = os.path.dirname(self.output_file_path)
-        os.makedirs(output_dir, exist_ok=True)
+        if output_dir:  # Only create directory if there's a directory path
+            os.makedirs(output_dir, exist_ok=True)
         
         # Create the output file if it doesn't exist
         if not os.path.exists(self.output_file_path):
             with open(self.output_file_path, 'w') as f:
                 f.write("# Time Sync Data Log\n")
-                f.write("# Format: Timestamp | ClockSyncData\n")
+                f.write("# Format: Timestamp | ClockSyncWatchToServer\n")
                 f.write("# " + "="*50 + "\n")
         
-        # Subscribe to the ClockSyncData channel
-        self.clock_sync_channel = self.subscribe("ClockSyncData", "", self.on_clock_sync)
+        # Subscribe to the ClockSyncWatchToServer channel
+        self.clock_sync_channel = self.subscribe("ClockSyncWatchToServer", "", self.on_clock_sync)
         
-        self.module_info(f"TimeSyncReaderModule subscribed to ClockSyncData channel")
+        self.module_info(f"ServerClockSyncSubscriberModule subscribed to ClockSyncWatchToServer channel")
         self.module_info(f"Output file: {self.output_file_path}")
     
     def on_clock_sync(self, data):
-        """Handle incoming ClockSyncData and print it."""
+        """Handle incoming ClockSyncWatchToServer and print it."""
         try:
             # Get current local timestamp
             local_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -57,23 +58,23 @@ class TimeSyncReaderModule(Module):
                 clock_sync_data = "No clock sync data found"
             
             # Print to console
-            self.module_info(f"Received ClockSyncData: {clock_sync_data}")
-            print(f"[TimeSyncReader] Local: {local_timestamp} | Original: {original_timestamp} | ClockSyncData: {clock_sync_data}")
+            self.module_info(f"Received ClockSyncWatchToServer: {clock_sync_data}")
+            print(f"[ServerClockSyncSubscriber] Local: {local_timestamp} | Original: {original_timestamp} | ClockSyncWatchToServer: {clock_sync_data}")
             
             # Save to text file
             with open(self.output_file_path, 'a') as f:
                 f.write(f"Local: {local_timestamp} | Original: {original_timestamp} | {clock_sync_data}\n")
             
         except Exception as e:
-            self.module_warning(f"Error processing ClockSyncData: {str(e)}")
+            self.module_warning(f"Error processing ClockSyncWatchToServer: {str(e)}")
     
     def annotateModule(self, annotator):
         """Annotate the module for CLAID Designer."""
         annotator.setDisplayName("Time Sync Reader Module")
-        annotator.setDescription("Reads and prints ClockSyncData for time syncing")
+        annotator.setDescription("Reads and prints ClockSyncWatchToServer for time syncing")
         
         # Input channels
-        annotator.addInputChannel("ClockSyncData", str, "Clock sync data")
+        annotator.addInputChannel("ClockSyncWatchToServer", str, "Clock sync data")
         
         # Properties
-        annotator.addProperty("outputFilePath", "/Users/robin/Code/mind-wandering_server/time_sync_data.txt", "Path to save time sync data") 
+        annotator.addProperty("outputFilePath", "server_clock_sync_subscriber.txt", "Path to save time sync data") 

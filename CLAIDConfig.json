@@ -24,22 +24,15 @@
           }
         },
         {
-          "type": "ClockSyncModule",
-          "id": "ClockSyncModule",
-          "input_channels": {},
-          "output_channels": {
-            "ClockSyncData": "ClockSyncData"
+          "type": "WatchClockSyncModule",
+          "id": "WatchClockSyncModule",
+          "input_channels": {
+            "ClockSyncServerToWatch": "ClockSyncServerToWatch"
           },
-          "properties": {
-            "syncIntervalMinutes": 5,
-            "syncSchedule": {
-              "periodic": [
-                {
-                  "period_minutes": 1
-                }
-              ]
-            }
-          }
+          "output_channels": {
+            "ClockSyncWatchToServer": "ClockSyncWatchToServer"
+          },
+          "properties": {}
         },
         {
           "type": "DataSaverModule",
@@ -135,25 +128,33 @@
           }
         },
         {
-          "type": "TimeSyncReaderModule",
-          "id": "TimeSyncReader",
+          "type": "ServerClockSyncSubscriberModule",
+          "id": "ServerClockSyncSubscriber",
           "input_channels": {
-            "ClockSyncData": "ClockSyncData"
+            "ClockSyncWatchToServer": "ClockSyncWatchToServer"
           },
           "output_channels": {},
           "properties": {
-            "outputFilePath": "/Users/robin/Code/mind-wandering_server/time_sync_data.txt"
+            "outputFilePath": "server_clock_sync_subscriber.txt"
           }
         },
         {
-          "type": "ServerClockSyncModule",
-          "id": "ServerClockSync",
+          "type": "ServerClockSyncPublisherModule",
+          "id": "ServerClockSyncPublisher",
           "input_channels": {},
           "output_channels": {
-            "ServerClockSyncData": "ServerClockSyncData"
+            "ClockSyncServerToWatch": "ClockSyncServerToWatch"
           },
           "properties": {
-            "outputFilePath": "/Users/robin/Code/mind-wandering_server/server_clock_sync_data.txt"
+            "outputFilePath": "server_clock_sync_publisher.txt",
+            "schedule": {
+              "periodic": [
+                {
+                  "period_seconds": 60
+                }
+              ],
+              "timed": []
+            }
           }
         }
       ]
