@@ -16,3 +16,4 @@ data_streamed/*
 
 # Logs
 *.txt
+*.csv
