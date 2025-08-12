@@ -95,7 +95,7 @@
     {
       "hostname": "Server",
       "server_config": {
-        "host_server_address": "192.168.0.94:1337"
+        "host_server_address": "192.168.0.168:1337"
       },
       "modules": [
         {
@@ -108,7 +108,7 @@
             "ToDataSyncModuleChannel": "DataReceiverToDataSync"
           },
           "properties": {
-            "storagePath": "/Users/robin/Code/mind-wandering_server/data"
+            "storagePath": "data"
           }
         },
         {
