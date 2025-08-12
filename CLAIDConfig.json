@@ -5,7 +5,7 @@
       "hostname": "galaxy_watch_host",
       "type": "android",
       "connect_to": {
-        "host": "Server",
+        "host": "Server"
       },
       "modules": [
         {
@@ -22,6 +22,17 @@
             "enableHeartRate" : true,
             "enableGreenPPG": true
           }
+        },
+        {
+          "type": "WatchClockSyncModule",
+          "id": "WatchClockSyncModule",
+          "input_channels": {
+            "ClockSyncServerToWatch": "ClockSyncServerToWatch"
+          },
+          "output_channels": {
+            "ClockSyncWatchToServer": "ClockSyncWatchToServer"
+          },
+          "properties": {}
         },
         {
           "type": "DataSaverModule",
@@ -87,7 +98,7 @@
     {
       "hostname": "Server",
       "server_config": {
-        "host_server_address": "172.20.10.8:1337"
+        "host_server_address": "192.168.0.94:1337"
       },
       "modules": [
         {
@@ -101,6 +112,49 @@
           },
           "properties": {
             "storagePath": "/Users/robin/Code/mind-wandering_server/data"
+          }
+        },
+        {
+          "type": "DataSaverModule",
+          "id": "AccelerationSaverModuleServer",
+          "input_channels": {
+            "DataChannel": "WatchAccelerationData"
+          },
+          "output_channels": {},
+          "properties": {
+            "storagePath": "/Users/robin/Code/mind-wandering_server/data_streamed",
+            "fileNameFormat": "%d.%m.%y/acceleration_data_%d.%m.%y_%H-%M.json",
+            "fileType": "batch_json"
+          }
+        },
+        {
+          "type": "ServerClockSyncSubscriberModule",
+          "id": "ServerClockSyncSubscriber",
+          "input_channels": {
+            "ClockSyncWatchToServer": "ClockSyncWatchToServer"
+          },
+          "output_channels": {},
+          "properties": {
+            "outputFilePath": "server_clock_sync_subscriber.txt"
+          }
+        },
+        {
+          "type": "ServerClockSyncPublisherModule",
+          "id": "ServerClockSyncPublisher",
+          "input_channels": {},
+          "output_channels": {
+            "ClockSyncServerToWatch": "ClockSyncServerToWatch"
+          },
+          "properties": {
+            "outputFilePath": "server_clock_sync_publisher.txt",
+            "schedule": {
+              "periodic": [
+                {
+                  "period_seconds": 10
+                }
+              ],
+              "timed": []
+            }
           }
         }
       ]
