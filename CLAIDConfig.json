@@ -43,7 +43,6 @@
             "storagePath": "%media_dir/files",
             "fileNameFormat": "%d.%m.%y/acceleration_data_%d.%m.%y_%H-%M.json",
             "fileType": "batch_json"
-
           }
         },
         {
@@ -55,7 +54,6 @@
             "storagePath": "%media_dir/files",
             "fileNameFormat": "%d.%m.%y/heart_rate_data_%d.%m.%y_%H-%M.json",
             "fileType": "batch_json"
-
           }
         },
         {
@@ -67,7 +65,6 @@
             "storagePath": "%media_dir/files",
             "fileNameFormat": "%d.%m.%y/green_ppg_data_%d.%m.%y_%H-%M.json",
             "fileType": "batch_json"
-
           }
         },
         {
@@ -115,19 +112,6 @@
           }
         },
         {
-          "type": "DataSaverModule",
-          "id": "AccelerationSaverModuleServer",
-          "input_channels": {
-            "DataChannel": "WatchAccelerationData"
-          },
-          "output_channels": {},
-          "properties": {
-            "storagePath": "/Users/robin/Code/mind-wandering_server/data_streamed",
-            "fileNameFormat": "%d.%m.%y/acceleration_data_%d.%m.%y_%H-%M.json",
-            "fileType": "batch_json"
-          }
-        },
-        {
           "type": "ServerClockSyncSubscriberModule",
           "id": "ServerClockSyncSubscriber",
           "input_channels": {
@@ -159,7 +143,5 @@
         }
       ]
     }
-
-
   ]
 }
