@@ -13,29 +13,23 @@ class ServerClockSyncPublisherModule(Module):
     def __init__(self):
         super().__init__()
         self.running = False
-        self.output_file_path = "server_clock_sync_publisher.txt"
+        self.output_dir = "time_sync"
         
     def initialize(self, properties):
         """Initialize the module with properties from the configuration."""
         self.module_info("ServerClockSyncPublisherModule initialized")
         
-        # Get output file path from properties if specified
+        # Get output directory from properties if specified
         if "outputFilePath" in properties:
-            self.output_file_path = properties["outputFilePath"]
+            self.output_dir = os.path.dirname(properties["outputFilePath"])
         
         # Create output directory if it doesn't exist
-        output_dir = os.path.dirname(self.output_file_path)
-        if output_dir:  # Only create directory if there's a directory path
-            os.makedirs(output_dir, exist_ok=True)
+        if self.output_dir:
+            os.makedirs(self.output_dir, exist_ok=True)
         
-        # Create the output file if it doesn't exist
-        if not os.path.exists(self.output_file_path):
-            with open(self.output_file_path, 'w') as f:
-                f.write("# Server Clock Sync Publisher Data Log\n")
-                f.write("# Format: Timestamp | Published Clock Sync Message\n")
-                f.write("# " + "="*50 + "\n")
+        # Note: Date-based files will be created when first data is written
         
-        self.module_info(f"Output file: {self.output_file_path}")
+        self.module_info(f"Output directory: {self.output_dir}")
         
         # Create the output channel for publishing clock sync messages
         self.output_channel = self.publish("ClockSyncServerToWatch", str())
@@ -63,6 +57,12 @@ class ServerClockSyncPublisherModule(Module):
             self.running = True
             self.register_periodic_function("publish_clock_sync", self.publish_clock_sync, timedelta(minutes=1))
             self.module_info("ServerClockSyncPublisherModule using default 60-second interval")
+    
+    def get_current_output_file(self):
+        """Get the current date-based output file path."""
+        current_date = datetime.now().strftime("%Y%m%d")
+        filename = f"{current_date}_server_clock_sync_publisher.txt"
+        return os.path.join(self.output_dir, filename)
         
     def publish_clock_sync(self):
         """Publish a clock sync message to the ClockSyncServerToWatch channel."""
@@ -84,8 +84,17 @@ class ServerClockSyncPublisherModule(Module):
             self.module_info(f"Published clock sync message: {clock_sync_message}")
             print(f"[ServerClockSyncPublisher] {current_time.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]} | Published: {clock_sync_message}")
             
-            # Save to log file
-            with open(self.output_file_path, 'a') as f:
+            # Save to log file with date-based filename
+            current_output_file = self.get_current_output_file()
+            
+            # Create file with header if it doesn't exist
+            if not os.path.exists(current_output_file):
+                with open(current_output_file, 'w') as f:
+                    f.write("# Server Clock Sync Publisher Data Log\n")
+                    f.write("# Format: Timestamp | Published Clock Sync Message\n")
+                    f.write("# " + "="*50 + "\n")
+            
+            with open(current_output_file, 'a') as f:
                 f.write(f"{current_time.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]} | {clock_sync_message}\n")
             
         except Exception as e:
@@ -100,7 +109,7 @@ class ServerClockSyncPublisherModule(Module):
         annotator.addOutputChannel("ClockSyncServerToWatch", str, "Clock sync messages published from server")
         
         # Properties
-        annotator.addProperty("outputFilePath", "server_clock_sync_publisher.txt", "Path to save published clock sync data log")
+        annotator.addProperty("outputFilePath", "time_sync/", "Directory to save published clock sync data logs (date-based files)")
         annotator.addProperty("schedule", {
             "periodic": [{
                 "period_seconds": 60

@@ -119,7 +119,7 @@
           },
           "output_channels": {},
           "properties": {
-            "outputFilePath": "server_clock_sync_subscriber.txt"
+            "outputFilePath": "time_sync/"
           }
         },
         {
@@ -130,7 +130,7 @@
             "ClockSyncServerToWatch": "ClockSyncServerToWatch"
           },
           "properties": {
-            "outputFilePath": "server_clock_sync_publisher.txt",
+            "outputFilePath": "time_sync/",
             "schedule": {
               "periodic": [
                 {
